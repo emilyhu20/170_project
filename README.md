@@ -1,2 +1,2 @@
 # 170_project
-170 project yo
+To generate the inputs and outputs, we used an iPython notebook that starting by generating an output by creating even chunks of names (from a dataset found online), and these were the final "bus" assignments. From there, we formed "friendships" by making connecting every node in each "bus". Then, to create constraints, we generated s^2 constraints by taking the i-th index of each bus (excluding the first one) and adding a name from the first bus. This easily created a scheme with many contraining sets and many friendships. 

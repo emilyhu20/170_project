@@ -1,4 +1,4 @@
-14
+13
 30
 ['Peter', 'Edgar', 'Milton', 'Lester', 'Claud', 'Harley', 'Emanuel', 'Bruce', 'Green', 'Judson', 'King', 'Wayne', 'John']
 ['Peter', 'Edgar', 'Milton', 'Lester', 'Claud', 'Harley', 'Emanuel', 'Bruce', 'Green', 'Judson', 'King', 'Wayne', 'William']
