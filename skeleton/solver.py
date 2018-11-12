@@ -62,10 +62,15 @@ def solve(graph, num_buses, size_bus, constraints):
                 if edge[0] in b and edge[1] in b:
                     num_friendships += 1
                     break
-        return (num_constraints - num_satisfied_groups)/num_friendships
+        return (num_constraints - num_satisfied_groups) - 5*num_friendships
 
     def acceptance_probability(cost_old, cost_new, temp):
-        return min(1, math.exp((cost_old - cost_new)/temp))
+        try:
+            exp = math.exp((cost_old - cost_new)/temp)
+        except OverflowError:
+            exp = 1.0
+        return exp
+        #return min(1, math.exp((cost_old - cost_new)/temp))
 
     def neighbors(buses, num_buses, size_bus):
         busOne = random.randint(0, num_buses - 1)
@@ -92,8 +97,8 @@ def solve(graph, num_buses, size_bus, constraints):
             while i <= 100:
                 new_buses = neighbors(buses, num_buses, size_bus)
                 new_cost = cost(new_buses)
-                if new_cost == 0:
-                    return buses
+                # if new_cost == 0:
+                #     return buses
                 ap = acceptance_probability(old_cost, new_cost, T)
                 if ap > random.random():
                     buses = new_buses
