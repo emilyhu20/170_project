@@ -102,7 +102,7 @@ def solve(graph, num_buses, size_bus, constraints):
     for s in students:
         if x == num_buses:
             x = 0
-        initial_sol[x] += [s.encode('ascii', 'ignore')]
+        initial_sol[x] += [s.encode('ascii', 'ignore').decode("utf-8")]
         x += 1
     final_sol = anneal(initial_sol)
     return final_sol
