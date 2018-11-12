@@ -2,7 +2,6 @@ import networkx as nx
 import os
 import random
 import math
-import output_scorer
 
 ###########################################
 # Change this variable to the path to 
@@ -87,6 +86,8 @@ def solve(graph, num_buses, size_bus, constraints):
             while i <= 100:
                 new_buses = neighbors(buses, num_buses, size_bus)
                 new_cost = cost(new_buses)
+                if new_cost == 0:
+                    return buses
                 ap = acceptance_probability(old_cost, new_cost, T)
                 if ap > random.random():
                     buses = new_buses
