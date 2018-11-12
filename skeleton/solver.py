@@ -56,7 +56,7 @@ def solve(graph, num_buses, size_bus, constraints):
         return min(1, Math.exp((cost_old - cost_new)/temp))
       
     def neighbors(buses, num_buses, size_bus):
-            busOne = random.randint(1, num_buses)
+        busOne = random.randint(1, num_buses)
         busTwo = random.randint(1, num_buses)
         while busOne == busTwo:
             busTwo = random.randint(1, num_buses)
@@ -71,20 +71,20 @@ def solve(graph, num_buses, size_bus, constraints):
         
     def anneal(buses):
         old_cost = cost(buses)
-            T = 1.0
-            T_min = 0.00001
-            alpha = 0.98
-            while T > T_min:
-                i = 1
-                while i <= 100:
-                    new_buses = neighbors(buses, num_buses, size_bus)
-                    new_cost = cost(new_buses)
-                    ap = acceptance_probability(old_cost, new_cost, T)
-                    if ap > random.random():
+        T = 1.0
+        T_min = 0.00001
+        alpha = 0.98
+        while T > T_min:
+            i = 1
+            while i <= 100:
+                new_buses = neighbors(buses, num_buses, size_bus)
+                new_cost = cost(new_buses)
+                ap = acceptance_probability(old_cost, new_cost, T)
+                if ap > random.random():
                     buses = new_buses
                     old_cost = new_cost
-                    i += 1
-                T = T*alpha
+                i += 1
+            T = T*alpha
         return buses
 
     students = random.shuffle(graph.nodes())
@@ -94,6 +94,8 @@ def solve(graph, num_buses, size_bus, constraints):
         initial_sol.append(students[x:x+size_bus])
         x += size_bus
     final_sol = anneal(initial_sol)
+    return final_sol
+
 def main():
     '''
         Main method which iterates over all inputs and calls `solve` on each.
