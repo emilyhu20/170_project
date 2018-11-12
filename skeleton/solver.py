@@ -1,5 +1,8 @@
 import networkx as nx
 import os
+import random
+import math
+import output_scorer
 
 ###########################################
 # Change this variable to the path to 
@@ -45,25 +48,30 @@ def parse_input(folder_name):
 def solve(graph, num_buses, size_bus, constraints):
     #TODO: Write this method as you like. We'd recommend changing the arguments here as well
     num_constraints = len(constraints)
-    num_satisfied_groups = 0
     def cost(buses):
-        for b in buses:
-            for c in constraints:
-              num_satisfied_groups += 1 - int(all(x in b for x in c))
+        num_satisfied_groups = 0
+        for c in constraints:
+            for b in buses:
+                if all(x in b for x in c):
+                    num_satisfied_groups -= 1
+                    break
+            num_satisfied_groups += 1
+        #TODO: calculate number of friendships broken
         return num_constraints - num_satisfied_groups
         
     def acceptance_probability(cost_old, cost_new, temp):
-        return min(1, Math.exp((cost_old - cost_new)/temp))
+        return min(1, math.exp((cost_old - cost_new)/temp))
       
     def neighbors(buses, num_buses, size_bus):
-        busOne = random.randint(1, num_buses)
-        busTwo = random.randint(1, num_buses)
+        busOne = random.randint(0, num_buses - 1)
+        busTwo = random.randint(0, num_buses - 1)
         while busOne == busTwo:
-            busTwo = random.randint(1, num_buses)
-        sOne = random.randint(1, size_bus)
-        sTwo = random.randint(1, size_bus)
+            busTwo = random.randint(0, num_buses - 1)
+        #print(buses[busTwo])
+        sOne = random.randint(0, len(buses[busOne]) - 1)
+        sTwo = random.randint(0, len(buses[busTwo]) - 1)
         while sOne == sTwo:
-            sTwo = random.randint(1, size_bus)
+            sTwo = random.randint(1, len(buses[busTwo]) - 1)
         temp = buses[busOne][sOne]
         buses[busOne][sOne] = buses[busTwo][sTwo]
         buses[busTwo][sTwo] = temp
@@ -87,48 +95,59 @@ def solve(graph, num_buses, size_bus, constraints):
             T = T*alpha
         return buses
 
-    students = random.shuffle(graph.nodes())
-    initial_sol = []
+    students = graph.nodes()
+    initial_sol = [[] for _ in range(num_buses)]
     x = 0
-    for i in range(num_buses):
-        initial_sol.append(students[x:x+size_bus])
-        x += size_bus
+    for s in students:
+        if x == num_buses:
+            x = 0
+        initial_sol[x] += [s.encode('ascii', 'ignore')]
+        x += 1
     final_sol = anneal(initial_sol)
     return final_sol
 
-def main():
-    '''
-        Main method which iterates over all inputs and calls `solve` on each.
-        The student should modify `solve` to return their solution and modify
-        the portion which writes it to a file to make sure their output is
-        formatted correctly.
-    '''
-    size_categories = ["small", "medium", "large"]
-    if not os.path.isdir(path_to_outputs):
-        os.mkdir(path_to_outputs)
+# def main():
+#     '''
+#         Main method which iterates over all inputs and calls `solve` on each.
+#         The student should modify `solve` to return their solution and modify
+#         the portion which writes it to a file to make sure their output is
+#         formatted correctly.
+#     '''
+#     size_categories = ["small", "medium", "large"]
+#     if not os.path.isdir(path_to_outputs):
+#         os.mkdir(path_to_outputs)
 
-    for size in size_categories:
-        category_path = path_to_inputs + "/" + size
-        output_category_path = path_to_outputs + "/" + size
-        category_dir = os.fsencode(category_path)
+#     for size in size_categories:
+#         category_path = path_to_inputs + "/" + size
+#         output_category_path = path_to_outputs + "/" + size
+#         category_dir = os.fsencode(category_path)
         
-        if not os.path.isdir(output_category_path):
-            os.mkdir(output_category_path)
+#         if not os.path.isdir(output_category_path):
+#             os.mkdir(output_category_path)
 
-        for input_folder in os.listdir(category_dir):
-            input_name = os.fsdecode(input_folder) 
-            graph, num_buses, size_bus, constraints = parse_input(category_path + "/" + input_name)
-            solution = solve(graph, num_buses, size_bus, constraints)
-            output_file = open(output_category_path + "/" + input_name + ".out", "w")
+#         for input_folder in os.listdir(category_dir):
+#             input_name = os.fsdecode(input_folder) 
+#             graph, num_buses, size_bus, constraints = parse_input(category_path + "/" + input_name)
+#             solution = solve(graph, num_buses, size_bus, constraints)
+#             output_file = open(output_category_path + "/" + input_name + ".out", "w")
 
-            #TODO: modify this to write your solution to your 
-            #      file properly as it might not be correct to 
-            #      just write the variable solution to a file
-            output_file.write(solution)
+#             #TODO: modify this to write your solution to your 
+#             #      file properly as it might not be correct to 
+#             #      just write the variable solution to a file
+#             output_file.write(solution)
 
-            output_file.close()
+#             output_file.close()
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
 
-
+def test():
+    input_folder = "../inputs/small"
+    graph, num_buses, size_bus, constraints = parse_input(input_folder)
+    solution = solve(graph, num_buses, size_bus, constraints)
+    #output_file = open("../x.out", "w")
+    with open("output.out", "w") as f:
+        for bus in solution:
+            f.write("%s\n" % bus)
+    print(solution)
+test()

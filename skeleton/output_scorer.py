@@ -87,6 +87,7 @@ def score_output(input_folder, output_file):
             for student in constraints[i]:
                 if student in graph:
                     graph.remove_node(student)
+                    print("hello")
 
     # score output
     score = 0
