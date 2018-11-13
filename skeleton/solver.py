@@ -2,6 +2,8 @@ import networkx as nx
 import os
 import random
 import math
+import time
+import copy
 
 ###########################################
 # Change this variable to the path to
@@ -47,6 +49,7 @@ def parse_input(folder_name):
 def solve(graph, num_buses, size_bus, constraints):
     #TODO: Write this method as you like. We'd recommend changing the arguments here as well
     num_constraints = len(constraints)
+    num_edges = len(graph.edges())
     def cost(buses):
         num_satisfied_groups = 0
         for c in constraints:
@@ -62,7 +65,8 @@ def solve(graph, num_buses, size_bus, constraints):
                 if edge[0] in b and edge[1] in b:
                     num_friendships += 1
                     break
-        return (num_constraints - num_satisfied_groups) - 5*num_friendships
+        #(num_constraints - num_satisfied_groups)
+        return (num_constraints - num_satisfied_groups) + (num_edges - num_friendships)
 
     def acceptance_probability(cost_old, cost_new, temp):
         try:
@@ -80,8 +84,8 @@ def solve(graph, num_buses, size_bus, constraints):
         #print(buses[busTwo])
         sOne = random.randint(0, len(buses[busOne]) - 1)
         sTwo = random.randint(0, len(buses[busTwo]) - 1)
-        while sOne == sTwo:
-            sTwo = random.randint(1, len(buses[busTwo]) - 1)
+        # while sOne == sTwo:
+        #     sTwo = random.randint(1, len(buses[busTwo]) - 1)
         temp = buses[busOne][sOne]
         buses[busOne][sOne] = buses[busTwo][sTwo]
         buses[busTwo][sTwo] = temp
@@ -89,25 +93,29 @@ def solve(graph, num_buses, size_bus, constraints):
 
     def anneal(buses):
         old_cost = cost(buses)
+        min_cost = cost(buses)
+        min_sol = buses
         T = 1.0
         T_min = 0.00001
-        alpha = 0.98
+        alpha = 0.988
         while T > T_min:
             i = 1
             while i <= 100:
                 new_buses = neighbors(buses, num_buses, size_bus)
                 new_cost = cost(new_buses)
-                # if new_cost == 0:
-                #     return buses
+                if new_cost < min_cost:
+                    min_cost = new_cost
+                    min_sol = copy.deepcopy(new_buses)
                 ap = acceptance_probability(old_cost, new_cost, T)
                 if ap > random.random():
                     buses = new_buses
                     old_cost = new_cost
                 i += 1
             T = T*alpha
-        return buses
+        return min_sol
 
-    students = graph.nodes()
+    students = list(graph.nodes())
+    random.shuffle(students)
     initial_sol = [[] for _ in range(num_buses)]
     x = 0
     for s in students:
@@ -115,7 +123,12 @@ def solve(graph, num_buses, size_bus, constraints):
             x = 0
         initial_sol[x] += [s.encode('ascii', 'ignore').decode("utf-8")]
         x += 1
+    start = time.time()
+    print(cost(initial_sol))
     final_sol = anneal(initial_sol)
+    finish = time.time()
+    print("total minutes to find solution: ", (finish-start)/60.0)
+    print(cost(final_sol))
     return final_sol
 
 # def main():
