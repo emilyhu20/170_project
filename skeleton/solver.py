@@ -10,14 +10,14 @@ import copy
 # the folder containing all three input
 # size category folders
 ###########################################
-path_to_inputs = "./all_inputs"
+path_to_inputs = "../all_inputs"
 
 ###########################################
 # Change this variable if you want
 # your outputs to be put in a
 # different folder
 ###########################################
-path_to_outputs = "./outputs"
+path_to_outputs = "../outputs"
 
 def parse_input(folder_name):
     '''
@@ -50,10 +50,12 @@ def solve(graph, num_buses, size_bus, constraints):
     #TODO: Write this method as you like. We'd recommend changing the arguments here as well
     num_constraints = len(constraints)
     num_edges = len(graph.edges())
+    flag = True
     def cost(buses):
+        new_buses = [set(b) for b in buses]
         num_satisfied_groups = 0
         for c in constraints:
-            for b in buses:
+            for b in new_buses:
                 if all(x in b for x in c):
                     num_satisfied_groups -= 1
                     break
@@ -61,12 +63,11 @@ def solve(graph, num_buses, size_bus, constraints):
         #TODO: calculate number of friendships broken
         num_friendships = 0
         for edge in list(graph.edges):
-            for b in buses:
+            for b in new_buses:
                 if edge[0] in b and edge[1] in b:
                     num_friendships += 1
                     break
-        #(num_constraints - num_satisfied_groups)
-        return (num_constraints - num_satisfied_groups) + (num_edges - num_friendships)
+        return 2*(num_friendships)/(.1 + num_edges) + num_satisfied_groups/(0.1 + num_constraints)
 
     def acceptance_probability(cost_old, cost_new, temp):
         try:
@@ -74,7 +75,6 @@ def solve(graph, num_buses, size_bus, constraints):
         except OverflowError:
             exp = 1.0
         return exp
-        #return min(1, math.exp((cost_old - cost_new)/temp))
 
     def neighbors(buses, num_buses, size_bus):
         busOne = random.randint(0, num_buses - 1)
@@ -93,7 +93,7 @@ def solve(graph, num_buses, size_bus, constraints):
 
     def anneal(buses):
         old_cost = cost(buses)
-        min_cost = cost(buses)
+        best = cost(buses)
         min_sol = buses
         T = 1.0
         T_min = 0.00001
@@ -103,8 +103,8 @@ def solve(graph, num_buses, size_bus, constraints):
             while i <= 100:
                 new_buses = neighbors(buses, num_buses, size_bus)
                 new_cost = cost(new_buses)
-                if new_cost < min_cost:
-                    min_cost = new_cost
+                if new_cost - best >= 0.1:
+                    best = new_cost
                     min_sol = copy.deepcopy(new_buses)
                 ap = acceptance_probability(old_cost, new_cost, T)
                 if ap > random.random():
@@ -112,6 +112,8 @@ def solve(graph, num_buses, size_bus, constraints):
                     old_cost = new_cost
                 i += 1
             T = T*alpha
+        if cost(buses) > cost(min_sol):
+            return buses
         return min_sol
 
     students = list(graph.nodes())
@@ -124,11 +126,11 @@ def solve(graph, num_buses, size_bus, constraints):
         initial_sol[x] += [s.encode('ascii', 'ignore').decode("utf-8")]
         x += 1
     start = time.time()
-    print(cost(initial_sol))
+    #print(cost(initial_sol))
     final_sol = anneal(initial_sol)
     finish = time.time()
     print("total minutes to find solution: ", (finish-start)/60.0)
-    print(cost(final_sol))
+    print(cost(final_sol) - cost(initial_sol))
     return final_sol
 
 # def main():
@@ -138,7 +140,8 @@ def solve(graph, num_buses, size_bus, constraints):
 #         the portion which writes it to a file to make sure their output is
 #         formatted correctly.
 #     '''
-#     size_categories = ["small", "medium", "large"]
+#     #size_categories = ["small", "medium", "large"]
+#     size_categories = ["small", "medium"]
 #     if not os.path.isdir(path_to_outputs):
 #         os.mkdir(path_to_outputs)
 
@@ -159,7 +162,9 @@ def solve(graph, num_buses, size_bus, constraints):
 #             #TODO: modify this to write your solution to your
 #             #      file properly as it might not be correct to
 #             #      just write the variable solution to a file
-#             output_file.write(solution)
+#             with output_file as f:
+#                 for bus in solution:
+#                     f.write("%s\n" % bus)
 
 #             output_file.close()
 
@@ -167,12 +172,14 @@ def solve(graph, num_buses, size_bus, constraints):
 #     main()
 
 def test():
-    input_folder = "../inputs/small"
-    graph, num_buses, size_bus, constraints = parse_input(input_folder)
-    solution = solve(graph, num_buses, size_bus, constraints)
-    #output_file = open("../x.out", "w")
-    with open("output.out", "w") as f:
-        for bus in solution:
-            f.write("%s\n" % bus)
-    print(solution)
+    inputs = [107, 109]
+    for i in inputs:
+        input_folder = "../all_inputs/small/" + str(i)
+        graph, num_buses, size_bus, constraints = parse_input(input_folder)
+        solution = solve(graph, num_buses, size_bus, constraints)
+        output_file = str(i) + ".out"
+        with open(output_file, "w") as f:
+            for bus in solution:
+                f.write("%s\n" % bus)
+        #print(solution)
 test()
