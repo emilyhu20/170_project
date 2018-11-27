@@ -172,7 +172,7 @@ def solve(graph, num_buses, size_bus, constraints):
 #     main()
 
 def test():
-    inputs = [107, 109]
+    inputs = [324, 325, 327, 328, 329, 330]
     for i in inputs:
         input_folder = "../all_inputs/small/" + str(i)
         graph, num_buses, size_bus, constraints = parse_input(input_folder)
