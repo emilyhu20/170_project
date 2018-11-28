@@ -50,7 +50,6 @@ def solve(graph, num_buses, size_bus, constraints):
     #TODO: Write this method as you like. We'd recommend changing the arguments here as well
     num_constraints = len(constraints)
     num_edges = len(graph.edges())
-    flag = True
     def cost(buses):
         new_buses = [set(b) for b in buses]
         num_satisfied_groups = 0
@@ -103,10 +102,10 @@ def solve(graph, num_buses, size_bus, constraints):
             curr_time = time.time()
             if (curr_time - start)/60 >= 30.0:
                 break
-            while i <= 350:
+            while i <= 500:
                 new_buses = neighbors(buses, num_buses, size_bus)
                 new_cost = cost(new_buses)
-                if new_cost - best >= 0.04:
+                if new_cost - best >= 0.08:
                     best = new_cost
                     min_sol = copy.deepcopy(new_buses)
                 ap = acceptance_probability(old_cost, new_cost, T)
@@ -127,20 +126,23 @@ def solve(graph, num_buses, size_bus, constraints):
             students.append(e[0].encode('ascii', 'ignore').decode("utf-8"))
         if e[1] not in students:
             students.append(e[1].encode('ascii', 'ignore').decode("utf-8"))
+    for s in graph.nodes():
+        if s not in students:
+            students.append(s.encode('ascii', 'ignore').decode("utf-8"))
     initial_sol = [[] for _ in range(num_buses)]
     x = 0
     chunk = len(students)//num_buses
     for i in range(num_buses):
         initial_sol[i] = students[x:x+chunk]
         x += chunk
-    # while x < len(students):
-    #     
-    for b in initial_sol:
-        if len(b) < size_bus:
-            b += students[x:x + size_bus - len(b)]
-        x += size_bus - len(b)
-        if x > len(students):
-            break
+    i = 0 
+    if x < len(students):   
+        rest = students[x:]
+        for student in rest: 
+            if i == num_buses:
+                i = 0
+            initial_sol[i] += [student]
+            i += 1
     #print(initial_sol)
     #print(len(initial_sol))
     # for s in students:
@@ -198,8 +200,11 @@ def solve(graph, num_buses, size_bus, constraints):
 #     main()
 
 def test():
-    inputs = []
-    for i in range(1, 111):
+    inputs = [2]
+    for i in range(23, 111):
+    #for i in inputs:
+        if i in [39, 80]:
+            continue
         input_folder = "../all_inputs/small/" + str(i)
         graph, num_buses, size_bus, constraints = parse_input(input_folder)
         solution = solve(graph, num_buses, size_bus, constraints)
