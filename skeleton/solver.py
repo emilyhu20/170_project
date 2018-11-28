@@ -103,7 +103,7 @@ def solve(graph, num_buses, size_bus, constraints):
             curr_time = time.time()
             if (curr_time - start)/60 >= 30.0:
                 break
-            while i <= 75:
+            while i <= 350:
                 new_buses = neighbors(buses, num_buses, size_bus)
                 new_cost = cost(new_buses)
                 if new_cost - best >= 0.04:
@@ -129,11 +129,20 @@ def solve(graph, num_buses, size_bus, constraints):
             students.append(e[1].encode('ascii', 'ignore').decode("utf-8"))
     initial_sol = [[] for _ in range(num_buses)]
     x = 0
-    #initial_sol = [students[i:i + size_bus] for i in range(0, len(students), size_bus)]
+    chunk = len(students)//num_buses
     for i in range(num_buses):
-        initial_sol[i] = students[x:x+size_bus]
-        x += size_bus
-    print(len(initial_sol))
+        initial_sol[i] = students[x:x+chunk]
+        x += chunk
+    # while x < len(students):
+    #     
+    for b in initial_sol:
+        if len(b) < size_bus:
+            b += students[x:x + size_bus - len(b)]
+        x += size_bus - len(b)
+        if x > len(students):
+            break
+    #print(initial_sol)
+    #print(len(initial_sol))
     # for s in students:
     #     if x == num_buses:
     #         x = 0
@@ -189,12 +198,12 @@ def solve(graph, num_buses, size_bus, constraints):
 #     main()
 
 def test():
-    inputs = [21]
-    for i in inputs:
+    inputs = []
+    for i in range(1, 111):
         input_folder = "../all_inputs/small/" + str(i)
         graph, num_buses, size_bus, constraints = parse_input(input_folder)
         solution = solve(graph, num_buses, size_bus, constraints)
-        output_file = "output.out"
+        output_file = "small/" + str(i) + ".out"
         with open(output_file, "w") as f:
             for bus in solution:
                 f.write("%s\n" % bus)
