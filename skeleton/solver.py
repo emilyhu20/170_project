@@ -200,10 +200,9 @@ def solve(graph, num_buses, size_bus, constraints):
 #     main()
 
 def test():
-    inputs = [2]
-    for i in range(23, 111):
-    #for i in inputs:
-        if i in [39, 80]:
+    for i in range(243, 331):
+    # for i in inputs:
+        if i in [258, 273, 287, 302, 304, 312, 321, 322]:
             continue
         input_folder = "../all_inputs/small/" + str(i)
         graph, num_buses, size_bus, constraints = parse_input(input_folder)
