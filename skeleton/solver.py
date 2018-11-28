@@ -114,7 +114,7 @@ def solve(graph, num_buses, size_bus, constraints):
                     old_cost = new_cost
                 i += 1
             T = T*alpha
-        if cost(buses) > cost(min_sol):
+        if cost(buses) > best:
             return buses
         return min_sol
 
@@ -151,7 +151,7 @@ def solve(graph, num_buses, size_bus, constraints):
     #     initial_sol[x] += [s.encode('ascii', 'ignore').decode("utf-8")]
     #     x += 1
     start = time.time()
-    #return initial_sol
+    return initial_sol
     #print(cost(initial_sol))
     final_sol = anneal(initial_sol)
     finish = time.time()
@@ -181,7 +181,7 @@ def solve(graph, num_buses, size_bus, constraints):
 
 #         for input_folder in os.listdir(category_dir):
 #             input_name = os.fsdecode(input_folder)
-#             if input_name == ".DS_Store" or input_name in ["56", "21", "3"]:
+#             if input_name == ".DS_Store": # or input_name in ["56", "21", "3"]:
 #                 continue
 #             graph, num_buses, size_bus, constraints = parse_input(category_path + "/" + input_name)
 #             solution = solve(graph, num_buses, size_bus, constraints)
@@ -200,15 +200,15 @@ def solve(graph, num_buses, size_bus, constraints):
 #     main()
 
 def test():
-    inputs = [2]
-    for i in range(23, 111):
+    #inputs = [36]
+    for i in range(107, 111):
     #for i in inputs:
-        if i in [39, 80]:
+        if i in [22, 39, 80, 106]:
             continue
         input_folder = "../all_inputs/small/" + str(i)
         graph, num_buses, size_bus, constraints = parse_input(input_folder)
         solution = solve(graph, num_buses, size_bus, constraints)
-        output_file = "small/" + str(i) + ".out"
+        output_file = "small2/" + str(i) + ".out"
         with open(output_file, "w") as f:
             for bus in solution:
                 f.write("%s\n" % bus)
