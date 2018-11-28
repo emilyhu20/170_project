@@ -200,11 +200,14 @@ def solve(graph, num_buses, size_bus, constraints):
 #     main()
 
 def test():
+<<<<<<< HEAD
     #inputs = [36]
-    for i in range(107, 111):
+    for i in range(1, 111):
     #for i in inputs:
         if i in [22, 39, 80, 106]:
-            continue
+    # for i in range(243, 331):
+    #     if i in [258, 273, 287, 302, 304, 312, 321, 322]:
+    #         continue
         input_folder = "../all_inputs/small/" + str(i)
         graph, num_buses, size_bus, constraints = parse_input(input_folder)
         solution = solve(graph, num_buses, size_bus, constraints)
