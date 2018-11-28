@@ -200,7 +200,6 @@ def solve(graph, num_buses, size_bus, constraints):
 #     main()
 
 def test():
-<<<<<<< HEAD
     #inputs = [36]
     for i in range(1, 111):
     #for i in inputs:
