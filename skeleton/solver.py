@@ -100,10 +100,13 @@ def solve(graph, num_buses, size_bus, constraints):
         alpha = 0.988
         while T > T_min:
             i = 1
-            while i <= 100:
+            curr_time = time.time()
+            if (curr_time - start)/60 >= 30.0:
+                break
+            while i <= 75:
                 new_buses = neighbors(buses, num_buses, size_bus)
                 new_cost = cost(new_buses)
-                if new_cost - best >= 0.1:
+                if new_cost - best >= 0.04:
                     best = new_cost
                     min_sol = copy.deepcopy(new_buses)
                 ap = acceptance_probability(old_cost, new_cost, T)
@@ -116,16 +119,28 @@ def solve(graph, num_buses, size_bus, constraints):
             return buses
         return min_sol
 
-    students = list(graph.nodes())
-    random.shuffle(students)
+    # students = list(graph.nodes())
+    # random.shuffle(students)
+    students = []
+    for e in graph.edges:
+        if e[0] not in students:
+            students.append(e[0].encode('ascii', 'ignore').decode("utf-8"))
+        if e[1] not in students:
+            students.append(e[1].encode('ascii', 'ignore').decode("utf-8"))
     initial_sol = [[] for _ in range(num_buses)]
     x = 0
-    for s in students:
-        if x == num_buses:
-            x = 0
-        initial_sol[x] += [s.encode('ascii', 'ignore').decode("utf-8")]
-        x += 1
+    #initial_sol = [students[i:i + size_bus] for i in range(0, len(students), size_bus)]
+    for i in range(num_buses):
+        initial_sol[i] = students[x:x+size_bus]
+        x += size_bus
+    print(len(initial_sol))
+    # for s in students:
+    #     if x == num_buses:
+    #         x = 0
+    #     initial_sol[x] += [s.encode('ascii', 'ignore').decode("utf-8")]
+    #     x += 1
     start = time.time()
+    #return initial_sol
     #print(cost(initial_sol))
     final_sol = anneal(initial_sol)
     finish = time.time()
@@ -141,7 +156,7 @@ def solve(graph, num_buses, size_bus, constraints):
 #         formatted correctly.
 #     '''
 #     #size_categories = ["small", "medium", "large"]
-#     size_categories = ["small", "medium"]
+#     size_categories = ["medium"]
 #     if not os.path.isdir(path_to_outputs):
 #         os.mkdir(path_to_outputs)
 
@@ -155,6 +170,8 @@ def solve(graph, num_buses, size_bus, constraints):
 
 #         for input_folder in os.listdir(category_dir):
 #             input_name = os.fsdecode(input_folder)
+#             if input_name == ".DS_Store" or input_name in ["56", "21", "3"]:
+#                 continue
 #             graph, num_buses, size_bus, constraints = parse_input(category_path + "/" + input_name)
 #             solution = solve(graph, num_buses, size_bus, constraints)
 #             output_file = open(output_category_path + "/" + input_name + ".out", "w")
@@ -172,12 +189,12 @@ def solve(graph, num_buses, size_bus, constraints):
 #     main()
 
 def test():
-    inputs = [107, 109]
+    inputs = [21]
     for i in inputs:
         input_folder = "../all_inputs/small/" + str(i)
         graph, num_buses, size_bus, constraints = parse_input(input_folder)
         solution = solve(graph, num_buses, size_bus, constraints)
-        output_file = str(i) + ".out"
+        output_file = "output.out"
         with open(output_file, "w") as f:
             for bus in solution:
                 f.write("%s\n" % bus)
