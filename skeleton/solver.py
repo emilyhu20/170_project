@@ -118,38 +118,38 @@ def solve(graph, num_buses, size_bus, constraints):
             return buses
         return min_sol
 
-    students = list(graph.nodes())
-    random.shuffle(students)
-    # students = []
-    # for e in graph.edges:
-    #     if e[0] not in students:
-    #         students.append(e[0].encode('ascii', 'ignore').decode("utf-8"))
-    #     if e[1] not in students:
-    #         students.append(e[1].encode('ascii', 'ignore').decode("utf-8"))
-    # for s in graph.nodes():
-    #     if s not in students:
-    #         students.append(s.encode('ascii', 'ignore').decode("utf-8"))
+    # students = list(graph.nodes())
+    # random.shuffle(students)
+    students = []
+    for e in graph.edges:
+        if e[0] not in students:
+            students.append(e[0].encode('ascii', 'ignore').decode("utf-8"))
+        if e[1] not in students:
+            students.append(e[1].encode('ascii', 'ignore').decode("utf-8"))
+    for s in graph.nodes():
+        if s not in students:
+            students.append(s.encode('ascii', 'ignore').decode("utf-8"))
     initial_sol = [[] for _ in range(num_buses)]
     x = 0
-    # chunk = len(students)//num_buses
-    # for i in range(num_buses):
-    #     initial_sol[i] = students[x:x+chunk]
-    #     x += chunk
-    # i = 0 
-    # if x < len(students):   
-    #     rest = students[x:]
-    #     for student in rest: 
-    #         if i == num_buses:
-    #             i = 0
-    #         initial_sol[i] += [student]
-    #         i += 1
+    chunk = len(students)//num_buses
+    for i in range(num_buses):
+        initial_sol[i] = students[x:x+chunk]
+        x += chunk
+    i = 0 
+    if x < len(students):   
+        rest = students[x:]
+        for student in rest: 
+            if i == num_buses:
+                i = 0
+            initial_sol[i] += [student]
+            i += 1
     #print(initial_sol)
     #print(len(initial_sol))
-    for s in students:
-        if x == num_buses:
-            x = 0
-        initial_sol[x] += [s.encode('ascii', 'ignore').decode("utf-8")]
-        x += 1
+    # for s in students:
+    #     if x == num_buses:
+    #         x = 0
+    #     initial_sol[x] += [s.encode('ascii', 'ignore').decode("utf-8")]
+    #     x += 1
     start = time.time()
     return initial_sol
     #print(cost(initial_sol))
@@ -200,13 +200,15 @@ def solve(graph, num_buses, size_bus, constraints):
 #     main()
 
 def test():
-    #inputs = [36]
-    for i in range(1, 111):
-        if i in [22, 39, 80, 106]:
-            continue
+    #inputs = [1000, 1009]
+    for i in range(1034, 1067):
+    #for i in inputs:
+        # if i in [139, 178, 162, 153, 142, 188]:
+        #     continue
+        input_folder = "../all_inputs/large/" + str(i)
         graph, num_buses, size_bus, constraints = parse_input(input_folder)
         solution = solve(graph, num_buses, size_bus, constraints)
-        output_file = "medium2/" + str(i) + ".out"
+        output_file = "../outputs/large2/" + str(i) + ".out"
         with open(output_file, "w") as f:
             for bus in solution:
                 f.write("%s\n" % bus)

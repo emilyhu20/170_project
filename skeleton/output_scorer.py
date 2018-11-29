@@ -13,7 +13,6 @@ import matplotlib.pyplot as plt
 # Examples:
 #   python3 output_scorer.py ./inputs/small/12 ./outputs/small/12.out
 ####################################################
-
 def score_output(input_folder, output_file):
     '''
         Takes an input and an output and returns the score of the output on that input if valid
