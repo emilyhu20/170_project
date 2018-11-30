@@ -77,6 +77,7 @@ def solve(graph, num_buses, size_bus, constraints):
                     break
         return num_rowdy_groups
     def get_num_friendships(buses):
+        new_buses = [set(b) for b in buses]
         num_friendships = 0
         for edge in list(graph.edges):
             for b in new_buses:
@@ -165,10 +166,12 @@ def solve(graph, num_buses, size_bus, constraints):
 
     def greedy_anneal():
         greedy_sol = greedy()
-        if get_num_rowdy(greedy_sol) > 0:
-            final_sol = anneal(greedy_sol, get_num_rowdy)
-        else:
-            final_sol = anneal(greedy_sol, get_num_friendships)
+        # if get_num_rowdy(greedy_sol) > 0:
+        #     final_sol = anneal(greedy_sol, get_num_rowdy)
+        # else:
+        #     final_sol = anneal(greedy_sol, get_num_friendships)
+        final_sol = anneal(greedy_sol, get_num_friendships)
+        final_sol = anneal(final_sol, get_num_rowdy)
         return final_sol
 
     def generate_random():
@@ -184,11 +187,8 @@ def solve(graph, num_buses, size_bus, constraints):
         return initial_sol
     def run_annealing():
         random_sol = generate_random()
-        start = time.time()
         final_sol = anneal(random_sol)
         finish = time.time()
-        print("total minutes to find solution: ", (finish-start)/60.0)
-        print(cost(final_sol) - cost(initial_sol))
         return final_sol
 
     #return greedy()
@@ -238,7 +238,8 @@ def solve(graph, num_buses, size_bus, constraints):
 
 def test():
     # 36
-    inputs = [1, 6, 7, 9, 11, 12, 13] #, 18, 19, 20, 24, 26, 27, 29, 32, 34, 35, 37, 42, 43, 44, 46, 47, 48, 49, 51, 52, 53, 56, 67, 68, 69, 71,73, 74, 76, 77, 81, 83, 84, 87, 88, 89, 90, 94, 95, 104, 108, 110]
+    inputs = [18]
+    #inputs = [ 29, 32, 34, 35, 37, 42] #, 43, 44, 46, 47, 48, 49, 51, 52, 53, 56, 67, 68, 69, 71,73, 74, 76, 77, 81, 83, 84, 87, 88, 89, 90, 94, 95, 104, 108, 110]
     #for i in range(1034, 1067):
     for i in inputs:
         # if i in [139, 178, 162, 153, 142, 188]:
