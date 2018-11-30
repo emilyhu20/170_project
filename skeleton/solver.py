@@ -76,6 +76,7 @@ def solve(graph, num_buses, size_bus, constraints):
                     num_rowdy_groups += 1
                     break
         return num_rowdy_groups
+
     def get_num_friendships(buses):
         new_buses = [set(b) for b in buses]
         num_friendships = 0
@@ -136,6 +137,47 @@ def solve(graph, num_buses, size_bus, constraints):
             return buses
         return min_sol
 
+    def greedy_with_constraint_check():
+	    students = []
+	    for e in graph.edges:
+	        if e[0] not in students:
+	            students.append(e[0].encode('ascii', 'ignore').decode("utf-8"))
+	        if e[1] not in students:
+	            students.append(e[1].encode('ascii', 'ignore').decode("utf-8"))
+	    for s in graph.nodes():
+	        if s not in students:
+	            students.append(s.encode('ascii', 'ignore').decode("utf-8"))
+	    initial_sol = [[] for _ in range(num_buses)]
+	    x = 0
+	    chunk = len(students)//num_buses
+	    for i in range(num_buses):
+	        initial_sol[i] = students[x:x+chunk]
+	        x += chunk
+	    i = 0 
+	    if x < len(students):   
+	        rest = students[x:]
+	        for student in rest: 
+	            if i == num_buses:
+	                i = 0
+	            initial_sol[i] += [student]
+	            i += 1
+	    cint = 0
+	    # counter = 0
+	    for c in constraints:
+	        for i in range(len(initial_sol)):
+	        	# while counter < 10 and cint < len(c):
+	            if all(x in initial_sol[i] for x in c):
+	                randbus = random.randint(0, len(initial_sol) - 1)
+	                randkid = random.randint(0, len(initial_sol[randbus]) - 1)
+	                cint = random.randint(0, len(c) - 1)
+	                temp = initial_sol[randbus][randkid]
+	                initial_sol[randbus][randkid] = c[cint]
+	                initial_sol[i].remove(c[cint])
+	                initial_sol[i].append(temp)
+		            #     cint += 1
+		            # counter += 1
+	    return initial_sol
+
     def greedy():
         students = []
         edges = list(graph.edges())
@@ -195,6 +237,7 @@ def solve(graph, num_buses, size_bus, constraints):
     return greedy_anneal()
     # return generate_random()
     # return run_annealing()
+    # return greedy_with_constraint_check()
 
 # def main():
 #     '''
