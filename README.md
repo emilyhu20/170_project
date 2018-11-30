@@ -1,2 +1,7 @@
 # 170_project
 To generate the inputs and outputs, we used an iPython notebook that starting by generating an output by creating even chunks of names (from a dataset found online), and these were the final "bus" assignments. From there, we formed "friendships" by making connecting every node in each "bus". Then, to create constraints, we generated s^2 constraints by taking the i-th index of each bus (excluding the first one) and adding a name from the first bus. This easily created a scheme with many contraining sets and many friendships. 
+
+# How to run the solver
+We have named all of the ways we generated inputs, and put them into functions. At the end of the solve method, we call one of them (but have left calls to the other ones in comments). We used the main() function to generate some initial solutions, but also created our own test() function to perform local testing. 
+After configuring which method to use and which inputs to run on, simply use "python3 solver.py"
+We also created our own scoring script called "scorer_many.py" that ran output_scorer.py on several functions and allowed us to manually check how our inputs were doing. You can configure which folder(s) of outputs to cycle through and use "python3 scorer_many.py"
