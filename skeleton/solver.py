@@ -143,7 +143,22 @@ def solve(graph, num_buses, size_bus, constraints):
                 i = 0
             initial_sol[i] += [student]
             i += 1
-    #print(initial_sol)
+    cint = 0
+    # counter = 0
+    for c in constraints:
+        for i in range(len(initial_sol)):
+        	# while counter < 10 and cint < len(c):
+            if all(x in initial_sol[i] for x in c):
+                randbus = random.randint(0, len(initial_sol) - 1)
+                randkid = random.randint(0, len(initial_sol[randbus]) - 1)
+                cint = random.randint(0, len(c) - 1)
+                temp = initial_sol[randbus][randkid]
+                initial_sol[randbus][randkid] = c[cint]
+                initial_sol[i].remove(c[cint])
+                initial_sol[i].append(temp)
+	            #     cint += 1
+	            # counter += 1
+    print(initial_sol)
     #print(len(initial_sol))
     # for s in students:
     #     if x == num_buses:
@@ -201,14 +216,14 @@ def solve(graph, num_buses, size_bus, constraints):
 
 def test():
     #inputs = [1000, 1009]
-    for i in range(1034, 1067):
+    for i in range(221, 332):
     #for i in inputs:
-        # if i in [139, 178, 162, 153, 142, 188]:
-        #     continue
-        input_folder = "../all_inputs/large/" + str(i)
+        if i in [231, 258, 273, 287, 302, 304, 312, 321, 322]:
+            continue
+        input_folder = "../all_inputs/medium/" + str(i)
         graph, num_buses, size_bus, constraints = parse_input(input_folder)
         solution = solve(graph, num_buses, size_bus, constraints)
-        output_file = "../outputs/large2/" + str(i) + ".out"
+        output_file = "temp_medium/" + str(i) + ".out"
         with open(output_file, "w") as f:
             for bus in solution:
                 f.write("%s\n" % bus)
